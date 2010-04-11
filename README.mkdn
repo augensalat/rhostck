@@ -8,9 +8,9 @@ sender hostnames.
 Build
 -----
 
-cd rhostck-*
-make
-make install
+  cd rhostck-*
+  make
+  make install
 
 Usage
 -----
