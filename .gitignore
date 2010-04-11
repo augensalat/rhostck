@@ -1,0 +1,12 @@
+*.sw?
+*.a
+*.o
+auto_home.c
+auto-str
+compile
+install
+load
+makelib
+rhostck
+systype
+uint32.h

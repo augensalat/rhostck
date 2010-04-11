@@ -1,0 +1,25 @@
+rhostck
+=======
+
+Companion program for [tcpserver][] and [rblsmtpd][], that sets the
+RBLSMTPD environment variable with an error message for suspicious
+sender hostnames.
+
+Build
+-----
+
+cd rhostck-*
+make
+make install
+
+Usage
+-----
+
+tcpserver -R -h 0 smtp rhostck rblsmtpd qmail-smtpd 2>&1
+
+Tcpserver option -h (look up remote host name in DNS) must be enabled
+(tcpserver default).
+
+[tcpserver]: http://cr.yp.to/ucspi-tcp/tcpserver.html
+[rblsmtpd]: http://cr.yp.to/ucspi-tcp/rblsmtpd.html
+
