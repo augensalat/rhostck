@@ -36,44 +36,46 @@ int check_remotehost(const char *tcpremotehost)
     const char *t, *start, *dot1, *dot2;
     char c;
     int unsigned i;
-    char *denyparts;
+    const char *denyparts;
     unsigned int split;
     
-    /* block hosts w/o a hostname */
+    /* always block hosts w/o a hostname */
     if (tcpremotehost == 0 || *tcpremotehost == 0)  return 0;
 
-    /*
-     * find dots in TCPREMOTEHOST
-     * no dots: "localhost" -> block
-     * one dot only: "name.tld" -> pass
-     * two or more dots: "host.name.tld" -> find position of second last dot
-     */
-    t = tcpremotehost;
-    dot1 = dot2 = start = 0;
-    for (;;) {
-	if (!*t) break;
-	if (*t == '.') {
-	    start = dot1;
-	    dot1 = dot2;
-	    dot2 = t;
-	}
-	++t;
-    }
-    if (!dot2) return 0;	// no dots
-    if (!dot1) return 1;	// one dot only
-    if (start)
-	++start;		// look at string after 3rd-latest dot
-    else
-	start = tcpremotehost;
-
-    /*
-     * look at part in front of second last dot (dot1):
-     * 47-11-23.dialup.name.tld
-     */
     denyparts = env_get("RHOSTCK_DENYPARTS");
     if (denyparts) {
 	size_t i = 0, len = 0;
 	const char *token = denyparts;
+
+	/*
+	 * find dots in TCPREMOTEHOST
+	 * no dots: "localhost" -> block
+	 * one dot only: "name.tld" -> pass
+	 * two or more dots: "host.name.tld" -> find position of second last dot
+	 */
+
+	t = tcpremotehost;
+	dot1 = dot2 = start = 0;
+	for (;;) {
+	    if (!*t) break;
+	    if (*t == '.') {
+		start = dot1;
+		dot1 = dot2;
+		dot2 = t;
+	    }
+	    ++t;
+	}
+	if (!dot2) return 0;	// no dots
+	if (!dot1) return 1;	// one dot only
+	if (start)
+	    ++start;		// look at string after 3rd-latest dot
+	else
+	    start = tcpremotehost;
+
+	/*
+	 * look at part in front of second last dot (dot1):
+	 * 47-11-23.dialup.name.tld
+	 */
 	for (;;) {
 	    if (!token[i])
 		len = i;
@@ -97,7 +99,7 @@ int check_remotehost(const char *tcpremotehost)
     return 1;
 }
 
-int main(int argc, char* argv[])
+int main(int argc, char** argv)
 {
     char *tcpremotehost;
 
@@ -112,5 +114,5 @@ int main(int argc, char* argv[])
 
     pathexec(argv + 1);
 
-    strerr_die4sys(111, FATAL, "unable to start ", argv + 1, ": ");
+    strerr_die4sys(111, FATAL, "unable to start ", argv[1], ": ");
 }
