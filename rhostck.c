@@ -1,3 +1,6 @@
+#include <sys/types.h>
+#include <sys/stat.h>
+#include "buffer.h"
 #include "case.h"
 #include "env.h"
 #include "pathexec.h"
@@ -5,24 +8,6 @@
 #include "strerr.h"
 
 #define FATAL "rhostck: fatal: "
-
-const char * const fishy[15] = {
-    "adsl",
-    "dsl",
-    "dynamicip",
-    "dynamic",
-    "dyn",
-    "pppoe",
-    "ppp",
-    "dialin",
-    "dialup",
-    "dial",
-    "pool",
-    "pools",
-    "dhcp",
-    "cable",
-    "cust",
-};
 
 /*
  * Check the given character. Return 0 if character is between 'A' and 'Z'
@@ -51,7 +36,10 @@ int check_remotehost(const char *tcpremotehost)
     const char *t, *start, *dot1, *dot2;
     char c;
     int unsigned i;
+    char *denyparts;
+    unsigned int split;
     
+    /* block hosts w/o a hostname */
     if (tcpremotehost == 0 || *tcpremotehost == 0)  return 0;
 
     /*
@@ -71,17 +59,39 @@ int check_remotehost(const char *tcpremotehost)
 	}
 	++t;
     }
-    if (!dot2) return 0;	/* no dots */
-    if (!dot1) return 1;	/* one dot only */
-    if (!start) start = tcpremotehost;
+    if (!dot2) return 0;	// no dots
+    if (!dot1) return 1;	// one dot only
+    if (start)
+	++start;		// look at string after 3rd-latest dot
+    else
+	start = tcpremotehost;
 
     /*
      * look at part in front of second last dot (dot1):
      * 47-11-23.dialup.name.tld
      */
-    for (f = 0; f < 15; ++f) {
-	if (case_starts(start, fishy[f]) && not_alphanumeric(start[str_len(fishy[f])]))
-	    return 0;
+    denyparts = env_get("RHOSTCK_DENYPARTS");
+    if (denyparts) {
+	size_t i = 0, len = 0;
+	const char *token = denyparts;
+	for (;;) {
+	    if (!token[i])
+		len = i;
+	    else if (token[i] == ' ') {
+		len = i;
+		do { ++i; } while (token[i] == ' ');
+	    }
+	    else {
+		++i;
+	    }
+	    if (len) {
+		if (case_diffb(start, len, token) == 0 && not_alphanumeric(start[len]))
+		    return 0;
+		token += i;
+		i = len = 0;
+	    }
+	    if (!*token) break;
+	}
     }
 
     return 1;
