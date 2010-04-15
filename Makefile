@@ -58,12 +58,12 @@ compile buffer_put.c buffer.h str.h byte.h error.h
 
 byte.a: \
 makelib byte_chr.o byte_copy.o byte_cr.o byte_diff.o byte_rchr.o \
-byte_zero.o case_diffb.o case_diffs.o case_starts.o fmt_ulong.o ip4_fmt.o \
+case_diffb.o fmt_ulong.o ip4_fmt.o \
 ip4_scan.o scan_ulong.o str_chr.o str_diff.o str_len.o str_start.o \
 uint16_pack.o uint16_unpack.o uint32_pack.o uint32_unpack.o
 	./makelib byte.a byte_chr.o byte_copy.o byte_cr.o \
-	byte_diff.o byte_rchr.o byte_zero.o case_diffb.o \
-	case_diffs.o case_starts.o fmt_ulong.o ip4_fmt.o ip4_scan.o scan_ulong.o \
+	byte_diff.o byte_rchr.o case_diffb.o \
+	fmt_ulong.o ip4_fmt.o ip4_scan.o scan_ulong.o \
 	str_chr.o str_diff.o str_len.o str_start.o uint16_pack.o \
 	uint16_unpack.o uint32_pack.o uint32_unpack.o
 
@@ -87,21 +87,9 @@ byte_rchr.o: \
 compile byte_rchr.c byte.h
 	./compile byte_rchr.c
 
-byte_zero.o: \
-compile byte_zero.c byte.h
-	./compile byte_zero.c
-
 case_diffb.o: \
 compile case_diffb.c case.h
 	./compile case_diffb.c
-
-case_diffs.o: \
-compile case_diffs.c case.h
-	./compile case_diffs.c
-
-case_starts.o: \
-compile case_starts.c case.h
-	./compile case_starts.c
 
 choose: \
 warn-auto.sh choose.sh conf-home
@@ -196,10 +184,6 @@ compile open_read.c open.h
 open_trunc.o: \
 compile open_trunc.c open.h
 	./compile open_trunc.c
-
-open_write.o: \
-compile open_write.c open.h
-	./compile open_write.c
 
 openreadclose.o: \
 compile openreadclose.c error.h open.h readclose.h stralloc.h \
@@ -334,7 +318,7 @@ choose compile load tryulong64.c uint64.h1 uint64.h2
 unix.a: \
 makelib alloc.o alloc_re.o buffer.o buffer_0.o buffer_1.o buffer_2.o \
 buffer_copy.o buffer_get.o buffer_put.o env.o error.o error_str.o \
-open_read.o open_trunc.o open_write.o openreadclose.o pathexec_env.o \
+open_read.o open_trunc.o openreadclose.o pathexec_env.o \
 pathexec_env.o pathexec_run.o \
 stralloc_cat.o stralloc_catb.o stralloc_cats.o stralloc_copy.o \
 stralloc_eady.o stralloc_opyb.o stralloc_opys.o stralloc_pend.o \
@@ -342,7 +326,7 @@ strerr_die.o strerr_sys.o
 	./makelib unix.a alloc.o alloc_re.o buffer.o buffer_0.o \
 	buffer_1.o buffer_2.o buffer_copy.o buffer_get.o \
 	buffer_put.o env.o error.o error_str.o open_read.o \
-	open_trunc.o open_write.o openreadclose.o pathexec_env.o \
+	open_trunc.o openreadclose.o pathexec_env.o \
 	pathexec_env.o pathexec_run.o \
 	stralloc_cat.o stralloc_catb.o stralloc_cats.o \
 	stralloc_copy.o stralloc_eady.o stralloc_opyb.o \
