@@ -1,25 +1,107 @@
 rhostck
 =======
 
-Companion program for [tcpserver][] and [rblsmtpd][], that sets the
-RBLSMTPD environment variable with an error message for suspicious
-sender hostnames.
+This is not a SPAM filter - it is the sledge hammer against SPAM.
+
+
+Rationale
+---------
+
+These days most SPAM mails originate from zillions of hacked PCs all over
+the world. In nearly all cases those PCs are connected over ADSL or cable
+modem lines, and the IP numbers typically have host names that reflect this,
+typically with names like "201-66-97-135.ctame706.dsl.brasiltelecom.net",
+"adsl190-2599186.dyn.etb.net.co" or "167-133.105-92.cust.bluewin.ch",
+or no hostname has been configured for that IP at all.
+
+
+Description
+-----------
+
+rhostck is companion program for [tcpserver][] and [rblsmtpd][], that
+sets the RBLSMTPD environment variable with an error message for suspicious
+sender hostnames. It is therefore probably most useful for a typical setup
+of the [qmail][] mail server.
+
+rhostck works by checking the sender's hostname, and if it doesn't like it
+for some reason, it will instruct [rblsmtpd][] to close the SMTP connection
+with an error message.
+
+rhostck is not meant as a comprehensive SPAM protection, but a low-resource
+pre-selector in order to cut down the number of mails, that have to be
+processed in subsequent stages of the mail incoming queue.
+
 
 Build
 -----
 
-  cd rhostck-*
-  make
-  make install
+    cd rhostck-*
+    make
+    make install
+
 
 Usage
 -----
 
-tcpserver -R -h 0 smtp rhostck rblsmtpd qmail-smtpd 2>&1
+    RHOSTCK_DENYPARTS="dial dialup dialin ppp pppoe" \
+      tcpserver -R -h 0 smtp rhostck rblsmtpd qmail-smtpd 2>&1
 
 Tcpserver option -h (look up remote host name in DNS) must be enabled
 (tcpserver default).
 
+By default rhostck blocks only remote hosts without a hostname. The
+environment variable RHOSTCK_DENYPARTS defines a space separated list of
+name parts of a hostname, that typically occur in hostnames of dynamic
+lines. rhostck will only look at the 3rd level of a domain name, meaning
+the part in front of the 2nd dot counted from the right end. If that
+_starts_ with one of the parts given in RHOSTCK_DENYPARTS the connection
+will be terminated.
+
+The following setting have proven to cut down a high amount of mails from
+dynamic hosts on a busy mail server (> 100,000 mails/day):
+
+    RHOSTCK_DENYPARTS="adsl dsl dynamicip dynamic dyn pppoe ppp dialin"
+    RHOSTCK_DENYPARTS="$RHOSTCK_DENYPARTS dialup dial pool pools"
+    RHOSTCK_DENYPARTS="$RHOSTCK_DENYPARTS dhcp cable cust"
+
+Note: Of course I recommend using [envdir][] for modifying the environment.
+
+
+Missing Something?
+------------------
+
+Have a look at the TODO file in the archive.
+
+The code's repos is publically available at [repo][]. Feel free to fork a
+copy and do a pull request if you added something interesting.
+
+
+Copyright & License
+-------------------
+
+Copyright (c) 2010  Bernhard Graf
+
+Permission is hereby granted, free of charge, to any person obtaining a
+copy of this software and associated documentation files (the "Software"),
+to deal in the Software without restriction, including without limitation
+the rights to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Software, and to permit persons to whom the
+Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.
+
+
 [tcpserver]: http://cr.yp.to/ucspi-tcp/tcpserver.html
 [rblsmtpd]: http://cr.yp.to/ucspi-tcp/rblsmtpd.html
-
+[qmail]: http://cr.yp.to/qmail.html
+[envdir]: http://cr.yp.to/daemontools/envdir.html
+[repo]: http://github.com/augensalat/rhostck
