@@ -1,0 +1,7 @@
+0.2	2010-04-17
+- Switching to DJB style.
+- Set of hostname parts is configurable.
+- Documentation.
+
+0.1	2008-03-06
+- Initial version, blocking from a fix set of hostname parts.
