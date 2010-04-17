@@ -8,9 +8,9 @@ Rationale
 ---------
 
 These days most SPAM mails originate from zillions of hacked PCs all over
-the world. In nearly all cases those PCs are connected over ADSL or cable
+the world. The vast majority of those PCs are connected over ADSL or cable
 modem lines, and the IP numbers typically have host names that reflect this,
-typically with names like "201-66-97-135.ctame706.dsl.brasiltelecom.net",
+with names like "201-66-97-135.ctame706.dsl.brasiltelecom.net",
 "adsl190-2599186.dyn.etb.net.co" or "167-133.105-92.cust.bluewin.ch",
 or no hostname has been configured for that IP at all.
 
@@ -72,8 +72,8 @@ Missing Something?
 
 Have a look at the TODO file in the archive.
 
-The code's repos is publically available at [GitHub][]. Feel free to fork a
-copy and do a pull request if you added something interesting.
+The code's repository is publically available at [GitHub][]. Feel free to
+fork a copy and do a pull request if you added something interesting.
 
 
 Copyright & License
