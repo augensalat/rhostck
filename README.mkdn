@@ -54,8 +54,8 @@ environment variable RHOSTCK_DENYPARTS defines a space separated list of
 name parts of a hostname, that typically occur in hostnames of dynamic
 lines. rhostck will only look at the 3rd level of a domain name, meaning
 the part in front of the 2nd dot counted from the right end. If that
-_starts_ with one of the parts given in RHOSTCK_DENYPARTS the connection
-will be terminated.
+_exists_ and _starts_ with one of the parts given in RHOSTCK_DENYPARTS
+the connection will be terminated.
 
 The following setting have proven to cut down a high amount of mails from
 dynamic hosts on a busy mail server (> 100,000 mails/day):
@@ -72,7 +72,7 @@ Missing Something?
 
 Have a look at the TODO file in the archive.
 
-The code's repos is publically available at [repo][]. Feel free to fork a
+The code's repos is publically available at [GitHub][]. Feel free to fork a
 copy and do a pull request if you added something interesting.
 
 
@@ -104,4 +104,4 @@ DEALINGS IN THE SOFTWARE.
 [rblsmtpd]: http://cr.yp.to/ucspi-tcp/rblsmtpd.html
 [qmail]: http://cr.yp.to/qmail.html
 [envdir]: http://cr.yp.to/daemontools/envdir.html
-[repo]: http://github.com/augensalat/rhostck
+[GitHub]: http://github.com/augensalat/rhostck
