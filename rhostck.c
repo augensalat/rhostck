@@ -6,8 +6,11 @@
 #include "pathexec.h"
 #include "str.h"
 #include "strerr.h"
+#include "version.h"
 
 #define FATAL "rhostck: fatal: "
+
+const char version[] = "rhostck " VERSION;
 
 /*
  * Check the given character. Return 0 if character is between 'A' and 'Z'
@@ -104,7 +107,7 @@ int main(int argc, char** argv)
     char *tcpremotehost;
 
     if (argc < 2)
-	strerr_die2x(111, FATAL, "usage: rhostck program [arguments]");
+	strerr_die2x(111, FATAL, "usage: rhostck program");
 
     if (check_remotehost(env_get("TCPREMOTEHOST")) == 0)
         pathexec_env(

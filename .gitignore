@@ -10,3 +10,6 @@ makelib
 rhostck
 systype
 uint32.h
+version.h
+core
+*.core

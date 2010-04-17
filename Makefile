@@ -98,6 +98,10 @@ warn-auto.sh choose.sh conf-home
 	> choose
 	chmod 755 choose
 
+clean:
+	rm -f rhostck auto-str compile install load makelib \
+	*.a *.o auto_home.c systype uint32.h version.h core *.core
+
 commands.o: \
 compile commands.c buffer.h stralloc.h gen_alloc.h str.h case.h \
 commands.h
@@ -206,6 +210,10 @@ rhostck
 rhostck: \
 load rhostck.o unix.a byte.a
 	./load rhostck unix.a byte.a
+
+rhostck.o: \
+compile rhostck.c version.h
+	./compile rhostck.c
 
 rts: \
 warn-auto.sh rts.sh conf-home
@@ -332,3 +340,7 @@ strerr_die.o strerr_sys.o
 	stralloc_copy.o stralloc_eady.o stralloc_opyb.o \
 	stralloc_opys.o stralloc_pend.o strerr_die.o strerr_sys.o
 
+version.h: \
+CHANGES
+	(head -n 1 CHANGES | sed 's/\([^ \t]*\).*/#define VERSION "\1"/') \
+	> version.h
