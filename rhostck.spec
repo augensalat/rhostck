@@ -9,8 +9,36 @@
 %define name rhostck
 %define version 0.3
 %define release 0
+%define group Utilities/System
 
 %define build_dietlibc	0
+
+%define is_mandrake	%([ -e /etc/mandrake-release ]; echo $[1-$?])
+%define is_mandriva	%([ -e /etc/mandriva-release ]; echo $[1-$?])
+%define is_suse		%([ -e /etc/SuSE-release ]; echo $[1-$?])
+%define is_redhat	%([ -e /etc/redhat-release ]; echo $[1-$?])
+%define is_fedora	%([ -e /etc/fedora-release ]; echo $[1-$?])
+
+%if %is_fedora
+%define distribution %(head -n1 /etc/fedora-release)
+%endif
+%if %is_redhat
+%define distribution %(head -n1 /etc/redhat-release)
+%endif
+%if %is_suse
+%define distribution %(head -n1 /etc/SuSE-release)
+%define group Productivity/Networking/Email/Servers
+%endif
+%if %is_mandriva
+%define release %{release}mdv
+%define distribution %(head -n1 /etc/mandriva-release)
+%define group Networking/Mail
+%endif
+%if %is_mandrake
+%define release %{release}mdk
+%define distribution %(head -n1 /etc/mandrake-release)
+%define group Networking/Mail
+%endif
 
 # commandline overrides:
 # rpm -ba|--rebuild --with dietlibc
@@ -18,19 +46,21 @@
 
 Name:		%{name}
 Version:	%{version}
-Release:        %{release}
+Release:	%{release}
+Distribution:   %{distribution}
+Group:		%{group}
 Summary:	Anti-SPAM companion for rblsmtpd
 License:	MIT
-Group:		Productivity/Networking/Email/Servers
-Source0:	%{name}-%{version}.tar.bz2
+Source:		%{name}-%{version}.tar.bz2
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%(id -nu)
 BuildRequires:	c_compiler make binutils coreutils
 %if %{build_dietlibc}
 BuildRequires:	dietlibc >= 0.30
 %endif
 
+
 %description
-rhostck is companion program for tcpserver and rblsmtpd, that sets the
+rhostck is a companion program for tcpserver and rblsmtpd, that sets the
 RBLSMTPD environment variable with an error message for suspicious sender
 hostnames. It is therefore probably most useful for a typical setup of the
 qmail mail server.
@@ -73,6 +103,8 @@ echo %{buildroot}%{_exec_prefix} >conf-home
 %{__rm} -f install.o auto_home.[co] install
 %{__make}
 ./install
+%{__mkdir_p} %{buildroot}%{_mandir}/man1
+%{__install} -m 0644 rhostck.1 %{buildroot}%{_mandir}/man1
 
 %clean
 test "%{buildroot}" != "/" -a -d "%{buildroot}" && %{__rm} -rf "%{buildroot}"
@@ -81,6 +113,7 @@ test "%{buildroot}" != "/" -a -d "%{buildroot}" && %{__rm} -rf "%{buildroot}"
 %defattr(-,root,root)
 %doc CHANGES README.mkdn TODO.mkdn
 %attr(0755,root,root) %{_bindir}/rhostck
+%attr(0644,root,root) %{_mandir}/man1/rhostck*
 
 %changelog
 * Sun Apr 18 2010 Bernhard Graf <graf@movingtarget.de> 0.3-0
