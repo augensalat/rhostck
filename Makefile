@@ -4,6 +4,9 @@ SHELL=/bin/sh
 
 default: it
 
+.PHONY: \
+clean dist distdir man prog
+
 alloc.o: \
 compile alloc.c alloc.h error.h
 	./compile alloc.c
@@ -99,8 +102,9 @@ warn-auto.sh choose.sh conf-home
 	chmod 755 choose
 
 clean:
-	rm -f rhostck auto-str compile install load makelib \
-	*.a *.o auto_home.c systype uint32.h version.h core *.core
+	rm -f VERSION rhostck auto-str compile install load makelib \
+	*.a *.o *.tar.bz2 auto_home.c systype uint32.h version.h \
+	core *.core
 
 commands.o: \
 compile commands.c buffer.h stralloc.h gen_alloc.h str.h case.h \
@@ -113,6 +117,20 @@ warn-auto.sh conf-cc
 	echo exec "`head -1 conf-cc`" '-c $${1+"$$@"}' \
 	) > compile
 	chmod 755 compile
+
+dist: \
+clean distdir
+
+distdir: \
+VERSION
+	env - PATH=$$PATH DISTDIR=`sed 's/ \{1,\}/-/' VERSION` sh -c '\
+		rm -rf $$DISTDIR; \
+		rm -rf $$DISTDIR.tar.bz2; \
+		mkdir $$DISTDIR; \
+		tar cf - . --exclude .git --exclude .gitignore --exclude rhostck.pod --exclude VERSION --exclude $$DISTDIR | tar xf - -C $$DISTDIR; \
+		tar cvvf $$DISTDIR.tar.bz2 --use=bzip2 $$DISTDIR; \
+		rm -rf $$DISTDIR \
+	'
 
 env.o: \
 compile env.c str.h env.h
@@ -181,6 +199,9 @@ warn-auto.sh systype
 	) > makelib
 	chmod 755 makelib
 
+man: \
+rhostck.1
+
 open_read.o: \
 compile open_read.c open.h
 	./compile open_read.c
@@ -210,6 +231,10 @@ rhostck
 rhostck: \
 load rhostck.o unix.a byte.a
 	./load rhostck unix.a byte.a
+
+rhostck.1: \
+rhostck.pod
+	pod2man -r '' -c '' -d ' ' -n rhostck rhostck.pod rhostck.1
 
 rhostck.o: \
 compile rhostck.c version.h
@@ -340,7 +365,12 @@ strerr_die.o strerr_sys.o
 	stralloc_copy.o stralloc_eady.o stralloc_opyb.o \
 	stralloc_opys.o stralloc_pend.o strerr_die.o strerr_sys.o
 
-version.h: \
+VERSION: \
 CHANGES
-	(head -n 1 CHANGES | sed 's/\([^ \t]*\).*/#define VERSION "\1"/') \
+	(head -n 1 CHANGES | sed 's/\([^ \t]*\).*/rhostck \1/') \
+	> VERSION
+
+version.h: \
+VERSION
+	(head -n 1 VERSION | sed 's/[^ ]* *\(.*\)/#define VERSION "\1"/') \
 	> version.h
