@@ -1,0 +1,35 @@
+=pod
+
+=head1 NAME
+
+rhostck - tell rblsmtpd to block mails from hosts with suspicious names
+
+=head1 SYNOPSIS
+
+B<rhostck rblsmtpd> ...
+
+=head1 DESCRIPTION
+
+B<rhostck> is supposed to run under B<tcpserver(1)> and to execute
+B<rblsmtpd(1)>.
+
+B<rhostck> checks the C<$TCPREMOTEHOST> environment variable. It may
+decide to set the C<$RBLSMTPD> environment variable in order to tell
+B<rblsmtpd> to reject the incoming SMTP delivery request.
+
+By default B<rhostck> instructs B<rblsmtpd> to reject only remote hosts
+without a hostname. With the environment variable C<$RHOSTCK_DENYPARTS>
+a space separated list of name parts of a hostname can be defined, that
+typically occur in hostnames of dynamic lines. B<rhostck> will only look
+at the 3rd level of a domain name, meaning the part in front of the 2nd
+dot counted from the right end. If that exists and starts with one of the
+parts given in C<$RHOSTCK_DENYPARTS> C<$RBLSMTPD> will be set.
+
+Ultimately B<rhostck> executes the command given as its first argument,
+which is B<rblsmtpd> normally.
+
+=head1 SEE ALSO
+
+tcpserver(1), rblsmtpd(1)
+
+L<http://cr.yp.to/ucspi-tcp.html>
