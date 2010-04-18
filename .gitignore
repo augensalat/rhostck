@@ -1,6 +1,7 @@
 *.sw?
 *.a
 *.o
+VERSION
 auto_home.c
 auto-str
 compile
