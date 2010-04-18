@@ -9,6 +9,7 @@
 #include "version.h"
 
 #define FATAL "rhostck: fatal: "
+#define DENYMSG "-Suspicious hostname - I don't accept mails from hosts on dynamic IP addresses."
 
 const char version[] = "rhostck " VERSION;
 
@@ -109,11 +110,14 @@ int main(int argc, char** argv)
     if (argc < 2)
 	strerr_die2x(111, FATAL, "usage: rhostck program");
 
-    if (check_remotehost(env_get("TCPREMOTEHOST")) == 0)
-        pathexec_env(
-	    "RBLSMTPD",
-	    "Suspicious hostname - I don't accept mails from hosts on dynamic IP addresses."
-	);
+    if (check_remotehost(env_get("TCPREMOTEHOST")) == 0) {
+	char *rblmsg = env_get("RHOSTCK_DENYMSG");
+
+	if (!rblmsg || !*rblmsg)
+	    rblmsg = DENYMSG;
+
+        pathexec_env("RBLSMTPD", rblmsg);
+    }
 
     pathexec(argv + 1);
 

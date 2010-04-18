@@ -1,3 +1,2 @@
 - check if hostname contains (part of) ip address
 - tests
-- make the error message text configurable
