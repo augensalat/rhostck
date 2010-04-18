@@ -12,15 +12,18 @@ the world. The vast majority of those PCs are connected over ADSL or cable
 modem lines, and the IP numbers typically have host names that reflect this,
 with names like "201-66-97-135.ctame706.dsl.brasiltelecom.net",
 "adsl190-2599186.dyn.etb.net.co" or "167-133.105-92.cust.bluewin.ch",
-or no hostname has been configured for that IP at all.
+or no hostname has been configured for that IP at all. Whenever an SMTP
+server receives mail from such a host, it can be quite sure, that the mail
+contains SPAM, because real users usually send their mails over hosts,
+destined to send all mail for a certain network.
 
 
 Description
 -----------
 
-rhostck is companion program for [tcpserver][] and [rblsmtpd][], that
+rhostck is a companion program for [tcpserver][] and [rblsmtpd][], that
 sets the RBLSMTPD environment variable with an error message for suspicious
-sender hostnames. It is therefore probably most useful for a typical setup
+sender hostnames. It is therefore probably most useful in a typical setup
 of the [qmail][] mail server.
 
 rhostck works by checking the sender's hostname, and if it doesn't like it
@@ -35,9 +38,29 @@ processed in subsequent stages of the mail incoming queue.
 Build
 -----
 
+    tar xjf rhostck-*.tar.bz2
     cd rhostck-*
+    echo /usr >conf-home   # optional, default is /usr/local
     make
-    make install
+    ./install
+
+To install with RPM:
+
+    # you many add "--with dietlibc" if you have dietlibc installed
+    rpmbuild -ta rhostck-*.tar.bz2
+    sudo rpm -Uvh $RPM_PATH/rhostck-*.rpm
+
+For package builders: If you want to install into a temporary directory,
+the before calling "./install", you must issue the following steps:
+
+    echo $BUILD_ROOT/usr >conf-home
+    rm -f install.o auto_home.[co] install
+    make
+    ./install
+
+Have a look at the included RPM SPEC file rhost.spec.
+
+Or just copy the executable "rhostck" after "make" wherever you want.
 
 
 Usage
