@@ -1,3 +1,11 @@
+0.3	2010-04-18
+- Making rblsmtpd message configurable.
+- Default rblsmtpd message now starts with a hyphen for a 553 error.
+- Bug fix: Installation was broken.
+- Documentation enhancements.
+- Adding an RPM SPEC file.
+- Adding a manpage.
+
 0.2	2010-04-17
 - Switching to DJB style.
 - Set of hostname parts is configurable.
