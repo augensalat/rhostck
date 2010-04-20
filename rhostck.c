@@ -78,6 +78,8 @@ int fishy_remotehost(const char *tcpremotehost)
     if (!denyparts)
 	return 0;
 
+    while (*denyparts == ' ') ++denyparts;	// skip leading spaces
+
     /*
      * find dots in TCPREMOTEHOST
      * no dots: "localhost" -> block
