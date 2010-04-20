@@ -1,6 +1,10 @@
 *.sw?
 *.a
 *.o
+*.tar
+*.tar.gz
+*.tar.bz2
+*.core
 VERSION
 auto_home.c
 auto-str
@@ -13,4 +17,3 @@ systype
 uint32.h
 version.h
 core
-*.core
