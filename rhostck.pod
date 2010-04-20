@@ -20,17 +20,17 @@ B<rblsmtpd> to reject the incoming SMTP delivery request.
 By default B<rhostck> instructs B<rblsmtpd> to reject only remote hosts
 without a hostname. With the environment variable C<$RHOSTCK_DENYPARTS>
 a space separated list of name parts of a hostname can be defined, that
-typically occur in hostnames of dynamic lines. B<rhostck> will only look
-at the 3rd level of a domain name, meaning the part in front of the 2nd
-dot counted from the right end. If that exists and starts with one of the
-parts given in C<$RHOSTCK_DENYPARTS> C<$RBLSMTPD> will be set.
+typically occur in hostnames of dynamic lines. B<rhostck> splits the
+remote hostname at the dots and looks at each part in front of the 2nd
+last dot. C<$RBLSMTPD> will be set, if at least one such part exists and
+starts with one of the parts given in C<$RHOSTCK_DENYPARTS>.
 
 The error message for B<rblsmtpd> is taken from the content of
 C<$RHOSTCK_DENYMSG>. If this is not set or emtpy the default text is
 C<"-Suspicious hostname - I don't accept mails from hosts on dynamic IP addresses.">;
 it starts with a hyphen to instruct B<rblsmtpd> to terminate the
 connection with a 553 permanent error.
-Ultimately B<rhostck> executes the command given as its first argument,
+Eventually B<rhostck> executes the command given as its first argument,
 which is B<rblsmtpd> normally.
 
 =head1 SEE ALSO

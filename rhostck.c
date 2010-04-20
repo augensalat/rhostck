@@ -31,76 +31,86 @@ unsigned int not_alphanumeric(unsigned char c)
 }
 
 /*
- * Check TCPREMOTEHOST environment variable.
- * Return 0 if we consider this host's name a untrustfull source.
+ * Compare all tokens of denyparts with the begining of start.
+ * Return 1 if any of the tokens equals start and the next character
+ * of start is not alphanumeric.
  */
-int check_remotehost(const char *tcpremotehost)
+unsigned int find_deny_token(const char *denyparts, const char *start)
 {
-    int unsigned f;
-    const char *t, *start, *dot1, *dot2;
-    char c;
-    int unsigned i;
-    const char *denyparts;
-    unsigned int split;
-    
-    /* always block hosts w/o a hostname */
-    if (tcpremotehost == 0 || *tcpremotehost == 0)  return 0;
+    size_t i = 0, len = 0;
+    const char *token = denyparts;
 
-    denyparts = env_get("RHOSTCK_DENYPARTS");
-    if (denyparts) {
-	size_t i = 0, len = 0;
-	const char *token = denyparts;
-
-	/*
-	 * find dots in TCPREMOTEHOST
-	 * no dots: "localhost" -> block
-	 * one dot only: "name.tld" -> pass
-	 * two or more dots: "host.name.tld" -> find position of second last dot
-	 */
-
-	t = tcpremotehost;
-	dot1 = dot2 = start = 0;
-	for (;;) {
-	    if (!*t) break;
-	    if (*t == '.') {
-		start = dot1;
-		dot1 = dot2;
-		dot2 = t;
-	    }
-	    ++t;
+    for (;;) {
+	if (!token[i])
+	    len = i;
+	else if (token[i] == ' ') {
+	    len = i;
+	    do { ++i; } while (token[i] == ' ');
 	}
-	if (!dot2) return 0;	// no dots
-	if (!dot1) return 1;	// one dot only
-	if (start)
-	    ++start;		// look at string after 3rd-latest dot
-	else
-	    start = tcpremotehost;
-
-	/*
-	 * look at part in front of second last dot (dot1):
-	 * 47-11-23.dialup.name.tld
-	 */
-	for (;;) {
-	    if (!token[i])
-		len = i;
-	    else if (token[i] == ' ') {
-		len = i;
-		do { ++i; } while (token[i] == ' ');
-	    }
-	    else {
-		++i;
-	    }
-	    if (len) {
-		if (case_diffb(start, len, token) == 0 && not_alphanumeric(start[len]))
-		    return 0;
-		token += i;
-		i = len = 0;
-	    }
-	    if (!*token) break;
+	else {
+	    ++i;
 	}
+	if (len) {
+	    if (case_diffb(start, len, token) == 0 && not_alphanumeric(start[len]))
+		return 1;
+	    token += i;
+	    i = len = 0;
+	}
+	if (!*token) break;
     }
 
-    return 1;
+    return 0;
+}
+
+/*
+ * Check TCPREMOTEHOST environment variable.
+ * Return 1 if we consider this host's name an untrustfull source.
+ */
+int fishy_remotehost(const char *tcpremotehost)
+{
+    const char *t, *start, *dot1, *dot2, *denyparts;
+    
+    /* always block hosts w/o a hostname */
+    if (tcpremotehost == 0 || *tcpremotehost == 0)  return 1;
+
+    denyparts = env_get("RHOSTCK_DENYPARTS");
+
+    if (!denyparts)
+	return 0;
+
+    /*
+     * find dots in TCPREMOTEHOST
+     * no dots: "localhost" -> block
+     * one dot only: "name.tld" -> pass
+     * two or more dots: "host.name.tld"
+     *   -> check the part before the current first dot;
+     *      if this is clean, search for more dots
+     */
+
+    t = tcpremotehost;
+    start = tcpremotehost;
+    dot1 = dot2 = 0;
+    for (;;) {
+	if (!*t) break;
+	if (*t == '.') {
+	    if (dot1)
+		start = dot1 + 1;
+	    dot1 = dot2;
+	    dot2 = t;
+
+	    /*
+	     * look at part in front of first dot (dot1):
+	     * 47-11-23.dialup.name.tld
+	     */
+	    if (dot1 && find_deny_token(denyparts, start))
+		return 1;
+	}
+	++t;
+    }
+
+    if (!dot2) return 1;	// no dots -> bad name
+
+    return 0;	// one dot only or no suspicious hostname parts detected
 }
 
 int main(int argc, char** argv)
@@ -110,7 +120,7 @@ int main(int argc, char** argv)
     if (argc < 2)
 	strerr_die2x(111, FATAL, "usage: rhostck program");
 
-    if (check_remotehost(env_get("TCPREMOTEHOST")) == 0) {
+    if (fishy_remotehost(env_get("TCPREMOTEHOST"))) {
 	char *rblmsg = env_get("RHOSTCK_DENYMSG");
 
 	if (!rblmsg || !*rblmsg)

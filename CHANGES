@@ -1,3 +1,6 @@
+0.4	2010-04-20
+- Look at each part in front of the second last dot.
+
 0.3	2010-04-18
 - Making rblsmtpd message configurable.
 - Default rblsmtpd message now starts with a hyphen for a 553 error.

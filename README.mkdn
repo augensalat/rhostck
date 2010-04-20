@@ -1,7 +1,7 @@
 rhostck
 =======
 
-This is not a SPAM filter - it is the sledge hammer against SPAM.
+This is not a SPAM filter - it is a sledge hammer against SPAM (it may hurt).
 
 
 Rationale
@@ -75,9 +75,9 @@ Tcpserver option -h (look up remote host name in DNS) must be enabled
 By default rhostck blocks only remote hosts without a hostname. The
 environment variable RHOSTCK_DENYPARTS defines a space separated list of
 name parts of a hostname, that typically occur in hostnames of dynamic
-lines. rhostck will only look at the 3rd level of a domain name, meaning
-the part in front of the 2nd dot counted from the right end. If that
-_exists_ and _starts_ with one of the parts given in RHOSTCK_DENYPARTS
+lines. rhostck splits the remote hostname at the dots and looks at each
+part from the beginnig up to the 2nd last dot. If such parts
+_exist_ and any _starts_ with one of the parts given in RHOSTCK_DENYPARTS
 the connection will be terminated.
 
 The following setting have proven to cut down a high amount of mails from
@@ -86,6 +86,17 @@ dynamic hosts on a busy mail server (> 100,000 mails/day):
     RHOSTCK_DENYPARTS="adsl dsl dynamicip dynamic dyn pppoe ppp dialin"
     RHOSTCK_DENYPARTS="$RHOSTCK_DENYPARTS dialup dial pool pools"
     RHOSTCK_DENYPARTS="$RHOSTCK_DENYPARTS dhcp cable cust"
+
+This will match
+
+- 201-66-97-135.ctame706.dsl.brasiltelecom.net
+- adsl190-2599186.dyn.etb.net.co
+- 167-133.105-92.cust.bluewin.ch
+
+but not
+
+- mail.dynamic.org
+- 130.59.1.201.dialing.example.com
 
 Note: Of course I recommend using [envdir][] for modifying the environment.
 

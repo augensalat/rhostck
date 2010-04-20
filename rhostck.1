@@ -146,17 +146,17 @@ decide to set the \f(CW$RBLSMTPD\fR environment variable in order to tell
 By default \fBrhostck\fR instructs \fBrblsmtpd\fR to reject only remote hosts
 without a hostname. With the environment variable \f(CW$RHOSTCK_DENYPARTS\fR
 a space separated list of name parts of a hostname can be defined, that
-typically occur in hostnames of dynamic lines. \fBrhostck\fR will only look
-at the 3rd level of a domain name, meaning the part in front of the 2nd
-dot counted from the right end. If that exists and starts with one of the
-parts given in \f(CW$RHOSTCK_DENYPARTS\fR \f(CW$RBLSMTPD\fR will be set.
+typically occur in hostnames of dynamic lines. \fBrhostck\fR splits the
+remote hostname at the dots and looks at each part in front of the 2nd
+last dot. \f(CW$RBLSMTPD\fR will be set, if at least one such part exists and
+starts with one of the parts given in \f(CW$RHOSTCK_DENYPARTS\fR.
 .PP
 The error message for \fBrblsmtpd\fR is taken from the content of
 \&\f(CW$RHOSTCK_DENYMSG\fR. If this is not set or emtpy the default text is
 \&\f(CW"\-Suspicious hostname \- I don\*(Aqt accept mails from hosts on dynamic IP addresses."\fR;
 it starts with a hyphen to instruct \fBrblsmtpd\fR to terminate the
 connection with a 553 permanent error.
-Ultimately \fBrhostck\fR executes the command given as its first argument,
+Eventually \fBrhostck\fR executes the command given as its first argument,
 which is \fBrblsmtpd\fR normally.
 .SH "SEE ALSO"
 .IX Header "SEE ALSO"
