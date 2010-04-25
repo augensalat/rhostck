@@ -62,13 +62,11 @@ compile buffer_put.c buffer.h str.h byte.h error.h
 byte.a: \
 makelib byte_chr.o byte_copy.o byte_cr.o byte_diff.o byte_rchr.o \
 case_diffb.o fmt_ulong.o ip4_fmt.o \
-ip4_scan.o scan_ulong.o str_chr.o str_diff.o str_len.o str_start.o \
-uint16_pack.o uint16_unpack.o uint32_pack.o uint32_unpack.o
+ip4_scan.o scan_ulong.o str_chr.o str_diff.o str_len.o str_start.o
 	./makelib byte.a byte_chr.o byte_copy.o byte_cr.o \
 	byte_diff.o byte_rchr.o case_diffb.o \
 	fmt_ulong.o ip4_fmt.o ip4_scan.o scan_ulong.o \
-	str_chr.o str_diff.o str_len.o str_start.o uint16_pack.o \
-	uint16_unpack.o uint32_pack.o uint32_unpack.o
+	str_chr.o str_diff.o str_len.o str_start.o
 
 byte_chr.o: \
 compile byte_chr.c byte.h
@@ -102,8 +100,8 @@ warn-auto.sh choose.sh conf-home
 	chmod 755 choose
 
 clean:
-	rm -f VERSION rhostck auto-str compile install load makelib \
-	*.a *.o *.tar.bz2 auto_home.c systype uint32.h version.h \
+	rm -f VERSION rhostck auto-str choose compile install load makelib \
+	*.a *.o *.tar.bz2 auto_home.c systype hasinline.h version.h \
 	core *.core
 
 commands.o: \
@@ -147,6 +145,10 @@ compile error_str.c error.h
 fmt_ulong.o: \
 compile fmt_ulong.c fmt.h
 	./compile fmt_ulong.c
+
+hasinline.h: \
+choose compile load tryinline.c
+	./choose c tryinline hasinline.h1 hasinline.h2 >hasinline.h
 
 hier.o: \
 compile hier.c auto_home.h
@@ -237,7 +239,7 @@ rhostck.pod
 	pod2man -r '' -c '' -d ' ' -n rhostck rhostck.pod rhostck.1
 
 rhostck.o: \
-compile rhostck.c version.h
+compile rhostck.c hasinline.h version.h
 	./compile rhostck.c
 
 rts: \
@@ -320,33 +322,6 @@ find-systype.sh conf-cc conf-ld trycpp.c x86cpuid.c
 	echo LD=\'`head -1 conf-ld`\'; \
 	cat find-systype.sh; \
 	) | sh > systype
-
-uint16_pack.o: \
-compile uint16_pack.c uint16.h
-	./compile uint16_pack.c
-
-uint16_unpack.o: \
-compile uint16_unpack.c uint16.h
-	./compile uint16_unpack.c
-
-uint32.h: \
-tryulong32.c compile load uint32.h1 uint32.h2
-	( ( ./compile tryulong32.c && ./load tryulong32 && \
-	./tryulong32 ) >/dev/null 2>&1 \
-	&& cat uint32.h2 || cat uint32.h1 ) > uint32.h
-	rm -f tryulong32.o tryulong32
-
-uint32_pack.o: \
-compile uint32_pack.c uint32.h
-	./compile uint32_pack.c
-
-uint32_unpack.o: \
-compile uint32_unpack.c uint32.h
-	./compile uint32_unpack.c
-
-uint64.h: \
-choose compile load tryulong64.c uint64.h1 uint64.h2
-	./choose clr tryulong64 uint64.h1 uint64.h2 > uint64.h
 
 unix.a: \
 makelib alloc.o alloc_re.o buffer.o buffer_0.o buffer_1.o buffer_2.o \

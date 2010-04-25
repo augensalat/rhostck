@@ -1,0 +1,2 @@
+/* sysdep: -inlinefunc */
+#define inline

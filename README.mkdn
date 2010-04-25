@@ -32,7 +32,8 @@ with an error message.
 
 rhostck is not meant as a comprehensive SPAM protection, but a low-resource
 pre-selector in order to cut down the number of mails, that have to be
-processed in subsequent stages of the mail incoming queue.
+processed in subsequent - and more resource-consuming stages of the mail
+incoming queue.
 
 
 Build
@@ -51,7 +52,7 @@ To install with RPM:
     sudo rpm -Uvh $RPM_PATH/rhostck-*.rpm
 
 For package builders: If you want to install into a temporary directory,
-the before calling "./install", you must issue the following steps:
+then before calling "./install", you must issue the following steps:
 
     echo $BUILD_ROOT/usr >conf-home
     rm -f install.o auto_home.[co] install
@@ -67,6 +68,7 @@ Usage
 -----
 
     RHOSTCK_DENYPARTS="dial dialup dialin ppp pppoe" \
+    RHOSTCK_IPHOSTNAME=4 \
       tcpserver -R -h 0 smtp rhostck rblsmtpd qmail-smtpd 2>&1
 
 Tcpserver option -h (look up remote host name in DNS) must be enabled
@@ -76,7 +78,7 @@ By default rhostck blocks only remote hosts without a hostname. The
 environment variable RHOSTCK_DENYPARTS defines a space separated list of
 name parts of a hostname, that typically occur in hostnames of dynamic
 lines. rhostck splits the remote hostname at the dots and looks at each
-part from the beginnig up to the 2nd last dot. If such parts
+part from the beginnig up to the penultimate dot. If such parts
 _exist_ and any _starts_ with one of the parts given in RHOSTCK_DENYPARTS
 the connection will be terminated.
 
@@ -97,6 +99,32 @@ but not
 
 - mail.dynamic.org
 - 130.59.1.201.dialing.example.com
+
+If the environment variable RHOSTCK_IPHOSTNAME is filled with a valid
+value, the part of remote hostname in front of the penultimate dot is
+checked to contain the remote host's ip address (or part of it). Valid
+values are __2__, __3__ and __4__, which defines the number of bytes from
+the binary IP address from LSB to MSB (or numbers of the dot-decimal
+notation from right to left) to be used for comparing. The (partial) IP
+address is searched in the hostname in decimal and hexdecimal form; the
+numbers may be separated by dots or hyphens, or without separators for
+decimal numbers each number is expected to be three bytes long and
+left-zero-padded, whereas the hexadecimal form uses the usual two nibbles
+for a byte. All comparisons are also done in reverse order. If the
+(partial) remote IP address is found in the remote hostname in any form
+described above, RBLSMTPD will be set with an error message.
+
+For example the configuration above would block
+
+<table>
+<tr><th>Hostname</th><th>IP</th></tr>
+<tr><td>20.241.50.116.ids.service.eastern-tele.com</td><td>116.50.241.20</td></tr>
+<tr><td>host81-132-215-129.range81-132.btcentralplus.com</td><td>81.132.215.129</td></tr>
+<tr><td>58.214.50.116.dsl.service.eastern-tele.com</td><td>116.50.214.58</td></tr>
+<tr><td>p579ddb9a.dip.t-dialin.net</td><td>87.157.219.154</td></tr>
+<tr><td>ppp079166109017.dsl.hol.gr</td><td>79.166.109.17</td></tr>
+</table>
+
 
 Note: Of course I recommend using [envdir][] for modifying the environment.
 

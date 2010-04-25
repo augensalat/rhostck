@@ -1,5 +1,5 @@
 #
-# spec file for package rhostck (Version 0.3)
+# spec file for package rhostck (Version 0.5)
 #
 # Copyright  (c)  2010  Bernhard Graf <graf@movingtarget.de>
 # This file and all modifications and additions to the pristine
@@ -7,7 +7,7 @@
 #
 
 %define name rhostck
-%define version 0.3
+%define version 0.5
 %define release 0
 %define group Utilities/System
 
@@ -116,5 +116,9 @@ test "%{buildroot}" != "/" -a -d "%{buildroot}" && %{__rm} -rf "%{buildroot}"
 %attr(0644,root,root) %{_mandir}/man1/rhostck*
 
 %changelog
+* Sun Apr 25 2010 Bernhard Graf <graf@movingtarget.de> 0.5-0
+- Upgrade to 0.5
+* Tue Apr 20 2010 Bernhard Graf <graf@movingtarget.de> 0.4-0
+- Upgrade to 0.4
 * Sun Apr 18 2010 Bernhard Graf <graf@movingtarget.de> 0.3-0
 - Initial wrap

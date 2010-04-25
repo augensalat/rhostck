@@ -1,3 +1,6 @@
+0.5	2010-04-25
+- Check if remote IP address is part of the remote hostname.
+
 0.4	2010-04-20
 - Look at each part in front of the second last dot.
 

@@ -14,6 +14,7 @@ load
 makelib
 rhostck
 systype
+hasinline.h
 uint32.h
 version.h
 core

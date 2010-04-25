@@ -13,17 +13,32 @@ B<rhostck rblsmtpd> ...
 B<rhostck> is supposed to run under B<tcpserver(1)> and to execute
 B<rblsmtpd(1)>.
 
-B<rhostck> checks the C<$TCPREMOTEHOST> environment variable. It may
-decide to set the C<$RBLSMTPD> environment variable in order to tell
-B<rblsmtpd> to reject the incoming SMTP delivery request.
+B<rhostck> checks the C<$TCPREMOTEHOST> environment variable. Based on
+the name of the remote host B<rhostck> may decide to set the C<$RBLSMTPD>
+environment variable in order to tell B<rblsmtpd> to reject the incoming
+SMTP delivery request. By default B<rhostck> instructs B<rblsmtpd> to
+reject remote hosts without a hostname.
 
-By default B<rhostck> instructs B<rblsmtpd> to reject only remote hosts
-without a hostname. With the environment variable C<$RHOSTCK_DENYPARTS>
-a space separated list of name parts of a hostname can be defined, that
-typically occur in hostnames of dynamic lines. B<rhostck> splits the
-remote hostname at the dots and looks at each part in front of the 2nd
-last dot. C<$RBLSMTPD> will be set, if at least one such part exists and
+In the environment variable C<$RHOSTCK_DENYPARTS> a space separated list
+of name parts of a hostname can be defined, that typically occur in
+hostnames of dynamic lines. B<rhostck> splits the remote hostname at the
+dots and looks at each part in front of the penultimate dot. C<$RBLSMTPD>
+will be set with an error message, if at least one such part exists and
 starts with one of the parts given in C<$RHOSTCK_DENYPARTS>.
+
+If the environment variable C<$RHOSTCK_IPHOSTNAME> is filled with a valid
+value, the part of remote hostname in front of the penultimate dot is
+checked to contain the remote host's ip address (or part of it). Valid
+values are C<2>, C<3> and C<4>, which defines the number of bytes from the
+binary IP address from LSB to MSB (or numbers of the dot-decimal notation
+from right to left) to be used for comparing. The (partial) IP address is
+searched in the hostname in decimal and hexdecimal form; the numbers may
+be separated by dots or hyphens, or without separators for decimal numbers
+each number is expected to be three bytes long and left-zero-padded,
+whereas the hexadecimal form uses the usual two nibbles for a byte.
+All comparisons are also done in reverse order. If the (partial) remote IP
+address is found in the remote hostname in any form described above,
+C<$RBLSMTPD> will be set with an error message.
 
 The error message for B<rblsmtpd> is taken from the content of
 C<$RHOSTCK_DENYMSG>. If this is not set or emtpy the default text is

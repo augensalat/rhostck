@@ -139,17 +139,32 @@ rhostck \- tell rblsmtpd to block mails from hosts with suspicious names
 \&\fBrhostck\fR is supposed to run under \fB\f(BItcpserver\fB\|(1)\fR and to execute
 \&\fB\f(BIrblsmtpd\fB\|(1)\fR.
 .PP
-\&\fBrhostck\fR checks the \f(CW$TCPREMOTEHOST\fR environment variable. It may
-decide to set the \f(CW$RBLSMTPD\fR environment variable in order to tell
-\&\fBrblsmtpd\fR to reject the incoming \s-1SMTP\s0 delivery request.
+\&\fBrhostck\fR checks the \f(CW$TCPREMOTEHOST\fR environment variable. Based on
+the name of the remote host \fBrhostck\fR may decide to set the \f(CW$RBLSMTPD\fR
+environment variable in order to tell \fBrblsmtpd\fR to reject the incoming
+\&\s-1SMTP\s0 delivery request. By default \fBrhostck\fR instructs \fBrblsmtpd\fR to
+reject remote hosts without a hostname.
 .PP
-By default \fBrhostck\fR instructs \fBrblsmtpd\fR to reject only remote hosts
-without a hostname. With the environment variable \f(CW$RHOSTCK_DENYPARTS\fR
-a space separated list of name parts of a hostname can be defined, that
-typically occur in hostnames of dynamic lines. \fBrhostck\fR splits the
-remote hostname at the dots and looks at each part in front of the 2nd
-last dot. \f(CW$RBLSMTPD\fR will be set, if at least one such part exists and
+In the environment variable \f(CW$RHOSTCK_DENYPARTS\fR a space separated list
+of name parts of a hostname can be defined, that typically occur in
+hostnames of dynamic lines. \fBrhostck\fR splits the remote hostname at the
+dots and looks at each part in front of the penultimate dot. \f(CW$RBLSMTPD\fR
+will be set with an error message, if at least one such part exists and
 starts with one of the parts given in \f(CW$RHOSTCK_DENYPARTS\fR.
+.PP
+If the environment variable \f(CW$RHOSTCK_IPHOSTNAME\fR is filled with a valid
+value, the part of remote hostname in front of the penultimate dot is
+checked to contain the remote host's ip address (or part of it). Valid
+values are \f(CW2\fR, \f(CW3\fR and \f(CW4\fR, which defines the number of bytes from the
+binary \s-1IP\s0 address from \s-1LSB\s0 to \s-1MSB\s0 (or numbers of the dot-decimal notation
+from right to left) to be used for comparing. The (partial) \s-1IP\s0 address is
+searched in the hostname in decimal and hexdecimal form; the numbers may
+be separated by dots or hyphens, or without separators for decimal numbers
+each number is expected to be three bytes long and left-zero-padded,
+whereas the hexadecimal form uses the usual two nibbles for a byte.
+All comparisons are also done in reverse order. If the (partial) remote \s-1IP\s0
+address is found in the remote hostname in any form described above,
+\&\f(CW$RBLSMTPD\fR will be set with an error message.
 .PP
 The error message for \fBrblsmtpd\fR is taken from the content of
 \&\f(CW$RHOSTCK_DENYMSG\fR. If this is not set or emtpy the default text is
